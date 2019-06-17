@@ -22,17 +22,17 @@ public class ReviewComment {
 		sheet1=wb1.getSheetAt(0);
 		
 		int rowcount = sheet1.getLastRowNum();
+	
 		for(int i =0;i<rowcount;i++) {
 			XSSFCell review = sheet1.getRow(i).getCell(0);
-			//MergedReview=MergedReview+","+"\"review\"";
-			
-		//	MergedReview=MergedReview+","+" \"sheet1.getRow(i).getCell(0)\" ";
+	
 			MergedReview1=MergedReview1+","+"\"" + review + "\"";
 			
+			
 		}
-	//	System.out.println(MergedReview);
+	
 		System.out.println(MergedReview1);
-		//sheet1.getRow(1).createCell(1).setCellValue(MergedReview);
+		
 	}
 
 }
