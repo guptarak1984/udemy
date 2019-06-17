@@ -1,0 +1,181 @@
+package Dryrun;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.math3.ode.ExpandableStatefulODE;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.openqa.selenium.By;
+import org.openqa.selenium.ElementNotVisibleException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class UdemyVceGuide {
+static List<String> AnsOptions = new ArrayList<>();
+static List<Integer> CorrectOption = new ArrayList<>();
+static String Question;
+static String Raw;
+public static XSSFWorkbook wb;
+public static XSSFSheet sheet1;
+static String SingleOrMulti;
+static String Explanation;
+static boolean IsExpPresent;
+static boolean IsImgPresent;
+
+
+public static void main(String[] args) throws InterruptedException, IOException {
+	System.setProperty("webdriver.chrome.driver", "C:\\Users\\A348404\\Downloads\\chromedriver_win32 (1)\\chromedriver.exe");
+WebDriver driver= new ChromeDriver();
+driver.manage().window().maximize();
+driver.manage().timeouts().pageLoadTimeout(120, TimeUnit.SECONDS);
+//driver.get("https://vceguide.com/how-many-possible-paths-are-identified-for-this-project-3/");
+driver.get("https://vceguide.com/which-query-would-give-the-required-result-4/");
+Thread.sleep(1000);
+
+//=================********************************====================
+
+File file =  new File("C:\\Users\\A348404\\Desktop\\Demo123.xlsx");
+FileInputStream  fis = new FileInputStream(file);
+wb = new XSSFWorkbook(fis);
+sheet1=wb.getSheetAt(0);
+
+for(int j=0;j<80;j++) 
+{
+sheet1.createRow(j);
+}
+
+//==================********************************======================
+
+List<WebElement> NumOfQuestions = driver.findElements(By.xpath("//a[contains(text(),'Question')]"));
+
+try 
+{
+
+for(int k=1;k<NumOfQuestions.size()+1;k++)
+{
+	
+	try {
+		Thread.sleep(750);
+		driver.findElement(By.xpath("(//a[contains(text(),'Question')])["+k+"]")).click();
+		}
+	catch (ElementNotVisibleException e)
+	{
+		Thread.sleep(500);
+		driver.findElement(By.xpath("//span[@id='next_btn2']")).click();
+		Thread.sleep(500);
+		driver.findElement(By.xpath("(//a[contains(text(),'Question')])["+k+"]")).click();
+	}
+/*String TempQNo = driver.findElement(By.xpath("(//a[contains(text(),'Question')])["+k+"]")).getText();
+
+String TempQNoSplit[] = TempQNo.split("Question");
+String QCal= TempQNoSplit[1].trim();
+System.out.println(Integer.parseInt(QCal)+1);
+if(((Integer.parseInt(QCal)+1) % 50)==0||(Integer.parseInt(QCal) % 50)==0)
+{
+	Thread.sleep(1000);
+	driver.findElement(By.xpath("//span[@id='next_btn2']")).click();
+	Thread.sleep(750);
+}*/
+
+Thread.sleep(2000);
+Raw=driver.findElement(By.xpath("//div[@class='entry-content']/p")).getText().trim();
+String RawSplit[]= Raw.split("A\\. ");
+Thread.sleep(200);
+//	Question = driver.findElement(By.xpath("//h1[@class='entry-title']")).getText().trim();
+Question = RawSplit[0];
+
+SingleOrMulti="";
+try {
+	IsImgPresent= driver.findElements(By.xpath("//div[@class='entry-content']//img")).isEmpty();
+	}
+	catch(Exception e)
+	{
+	
+	}
+finally {
+	if(IsImgPresent)
+		SingleOrMulti = "No";
+	else
+		SingleOrMulti = "Yes";
+}
+
+
+
+List<WebElement> Ans = driver.findElements(By.xpath("(//div[@class='entry-content']/p/strong)"));
+for(int j=0;j<Ans.size();j++) 
+{
+
+//	System.out.println(Ans.get(i).getText());
+AnsOptions.add(Ans.get(j).getText().replaceAll("A. |B. |C. |D. |E. |F. ", ""));
+Thread.sleep(200);
+}
+
+//	String AnsO1 = driver.findElement(By.xpath("(//div[@class='entry-content']/p/strong)[1]")).getText();
+
+
+
+driver.findElement(By.xpath("//span[contains(text(),'SHOW ANSWERS')]")).click();
+Thread.sleep(1000);
+
+String CorrectAns = driver.findElement(By.xpath("//strong[contains(text(),'Correct Answer:')]")).getText().replaceAll("Correct Answer:", "").trim();
+CorrectAns = CorrectAns.replaceAll("A", "1").replaceAll("B", "2").replaceAll("C", "3").replaceAll("D", "4").replaceAll("E", "5").replaceAll("F", "6");
+
+Thread.sleep(500);
+sheet1.getRow(k).createCell(0).setCellValue(Question);
+sheet1.getRow(k).createCell(1).setCellValue(SingleOrMulti);
+
+
+for(int l=0;l<AnsOptions.size();l++)
+{
+sheet1.getRow(k).createCell(l+2).setCellValue(AnsOptions.get(l));
+}
+
+AnsOptions.clear();
+
+IsExpPresent= false;
+try {
+	IsExpPresent= driver.findElements(By.xpath("//em")).isEmpty();
+	}
+	catch(Exception e)
+	{
+	
+	}
+finally {
+	if(IsExpPresent)
+		Explanation= "NA";
+	else
+		Explanation=driver.findElement(By.xpath("//em")).getText();
+}
+
+sheet1.getRow(k).createCell(9).setCellValue(CorrectAns); 
+sheet1.getRow(k).createCell(10).setCellValue(Explanation); 
+Thread.sleep(250);
+SingleOrMulti="";
+Explanation="";
+
+}
+}
+
+catch(Exception e )
+{
+	
+}
+finally
+{
+FileOutputStream fout=new FileOutputStream(file);
+wb.write(fout);
+wb.close();
+
+}
+
+
+}
+
+}
