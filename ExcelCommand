@@ -1,0 +1,14 @@
+=IF(LEN(J2)>1,CONCATENATE(LEFT(J2,1),","))
+
+=IF(B4<70,”FAIL”,”PASS”)    
+=IF(LEN(J2)==1,”multiple-choice”,”multi-select”)      
+
+=IF(LEN(J2)=1,"multiple-choice","multi-select")     --working        
+
+=SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(I2,"A","1"),"B","2"),"C","3"),"D","4")  - working
+
+=SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(J2,"A","1"),"B","2"),"C","3"),"D","4"),"E","5"),"F","6")
+
+
+=SUBSTITUTE(A2, "T", "Task ")
+=LEFT(I2,1)
